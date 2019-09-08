@@ -1,14 +1,15 @@
 import subprocess
+import socket
 import shlex
 import cv2
-import threading
 import time
+from utils import *
 import numpy as np
 
 
 def open_pipe():
     process = subprocess.Popen(
-        shlex.split(' /bin/bash  /home/zbigniew/PycharmProjects/opencv/readStream.sh'),
+        shlex.split(READ_STREAM),
         stdout=subprocess.PIPE)
 
     while True:
@@ -20,6 +21,40 @@ def open_pipe():
     rc = process.poll()
     return rc
 
+def receive(self):
+    while True:
+        try:
+            bits = sock.recv(BUFF_SIZE)
+            message = bits.decode('ascii')
+
+            log.info('Received message:', message)
+
+            if message == 'exit': # TODO
+                log.info('Shutting down')
+            else:
+                cmd_executor.execute(message)
+
+        except ConnectionResetError:
+            log.info('Connection was remotely closed, shutting down')
+            dispose()
+
+def send(self, message):
+    log.info('Sending message:', message)
+    sock.send(bytearray(message, 'ascii'))
+
+
+def server_worker():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        conn, addr = s.accept()
+
+        with conn:
+            print('Client connected by', addr)
+
+            while True:
+                data = conn.recv(1024)
+
 
 def init():
     t = threading.Thread(target=open_pipe)
@@ -27,7 +62,7 @@ def init():
 
     time.sleep(1)
     print('ready')
-    cap = cv2.VideoCapture('fifo264')
+    cap = cv2.VideoCapture(FIFO_FILE)
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -38,7 +73,6 @@ def init():
 
     cap.release()
     cv2.destroyAllWindows()
-    t.join()
 
 
 if __name__ == '__main__':
