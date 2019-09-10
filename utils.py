@@ -24,6 +24,14 @@ START_STREAM_CMD = 'start_stream'
 STOP_STREAM_CMD = 'stop_stream'
 SHUTDOWN_CMD = 'shutdown'
 
+# hardware constants
+WHEELS_CAMERA_ADDR = 0X04
+RIGHT_ENCODER_ADDR = 0x06
+LEFT_ENCODER_ADDR = 0x07
+SERVO_W_DISTANCE_SENSOR_ADDR = 0x08
+
+SETTING_SPEED_FLAG = ord('q')
+
 
 class StoppableThread(threading.Thread):
     """Thread class with a stop() method. The thread itself has to check

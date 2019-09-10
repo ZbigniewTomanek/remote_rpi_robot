@@ -5,6 +5,7 @@ import sys
 import shlex
 import smbus2
 from utils import *
+from robot_hardware import *
 
 
 class CommunicationService:
@@ -80,6 +81,7 @@ class I2CBus(object):
         self.bus.write_byte(self.address, value)
         # bus.write_byte_data(address, 0, value)
         return -1
+
 
 class CommandExecutor:
     """Executes given command on robot"""

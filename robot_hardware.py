@@ -1,41 +1,67 @@
-import smbus2
+from smbus2 import SMBus
 import board
 import busio
-
 import adafruit_vl53l0x
+
 import time
-import sys
+import logging
+from utils import *
+
+log = logging.getLogger('Hardware')
 
 
-class Encoder(object):
-    count = 0
-
-    def __init__(self, address):
-        self.bus = smbus2.SMBus(1)
-        self.address = address
+class I2cDevice:
+    address = None
+    error_count = 0
 
     def write(self, value):
         try:
-            self.bus.write_byte(self.address, value)
-            self.count = 0
-            time.sleep(0.01)
+            with SMBus(1) as b:
+                b.write_byte_data(self.address, 0, value)
+                self.error_count = 0
+
         except OSError:
-            self.count += 1
-            if self.count > 4:
-                print('fatal bus error')
-                sys.exit()
+            self.error_count += 1
+
+            if self.error_count > 4:
+                log.error('Byte "{}" cannot be written to device on address {}'.format(value, self.address))
 
             time.sleep(0.05)
             self.write(value)
 
     def read_number(self):
         try:
-            time.sleep(0.1)
-            number = self.bus.read_byte(self.address)
+            with SMBus(1) as b:
+                number = b.read_byte(self.address)
+
             return number
         except OSError:
-            time.sleep(0.5)
             return -1
+
+
+class Drive(I2cDevice):
+    speed = 255
+
+    def __init__(self, address):
+        self.address = address
+
+    def set_speed(self, speed):
+        try:
+            self.write(SETTING_SPEED_FLAG)
+            self.write(speed)
+            self.speed = speed
+
+            log.info('Speed of robot set to {}'.format(speed))
+        except ValueError:
+            log.error('Value of robot speed was not set')
+
+    def forward(self):
+        self.write()
+
+
+class Encoder(I2cDevice):
+    def __init__(self, address):
+        self.address = address
 
     def reset(self):
         self.write(0)
@@ -55,15 +81,13 @@ class Encoder(object):
         return steps
 
 
-class Encoders(object):
-    l_encoder = None
-    r_encoder = None
+class Encoders(I2cDevice):
     # tick_length = 0.2042035
     tick_length = 1
 
-    def __init__(self):
-        self.l_encoder = Encoder(0x07)
-        self.r_encoder = Encoder(0x06)
+    def __init__(self, l_encoder_addr, r_encoder_addr):
+        self.l_encoder = Encoder(l_encoder_addr)
+        self.r_encoder = Encoder(r_encoder_addr)
 
     def get_distances(self):
         left_ticks = self.l_encoder.get_steps()  # * self.tick_length
@@ -77,43 +101,15 @@ class Encoders(object):
         self.r_encoder.reset()
 
 
-class Sensor(object):
+class Sensor(I2cDevice):
     servo_pos = 90
     servo_delta = 5
 
-    address = None
-    bus = None
-
-    count = 0
     i2c = busio.I2C(board.SCL, board.SDA)
     vl53 = adafruit_vl53l0x.VL53L0X(i2c)
 
     def __init__(self, address):
-        self.bus = smbus2.SMBus(1)
         self.address = address
-
-    def write(self, value):
-        try:
-            self.bus.write_byte(self.address, value)
-            self.count = 0
-            time.sleep(0.01)
-        except OSError:
-            self.count += 1
-            if self.count > 4:
-                print('fatal bus error')
-                sys.exit()
-
-            time.sleep(0.1)
-            self.write(value)
-
-    def read_number(self):
-        try:
-            time.sleep(0.1)
-            number = self.bus.read_byte(self.address)
-            return number
-        except OSError:
-            time.sleep(0.5)
-            return -1
 
     def set_delta(self, delta):
         self.servo_delta = delta
@@ -155,6 +151,10 @@ class Sensor(object):
         return distances
 
 
+encoders = Encoders(LEFT_ENCODER_ADDR, RIGHT_ENCODER_ADDR)
+distance_sensor = Sensor(SERVO_W_DISTANCE_SENSOR_ADDR)
+drive_control = Drive(WHEELS_CAMERA_ADDR)
+
 if __name__ == '__main__':
     # e = Encoder(0x06)
 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
             # print(e.get_steps())
             e.get_distances()
 
-    s = Sensor(0x08)
+    s = Sensor(SERVO_W_DISTANCE_SENSOR_ADDR)
 
     while 1:
         temp = input('podaj komende: ')
