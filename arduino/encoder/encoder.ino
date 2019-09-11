@@ -67,11 +67,13 @@ void sendData(){
   Wire.write(number);
 }
 
-
-void loop() {
-//  if(Serial.available()) {
-//    int n = Serial.read() - '0';
-//    executeCommand(n);
-//  }
+void test() {
+  if(Serial.available()) {
+    int n = Serial.read() - '0';
+    executeCommand(n);
+  }
 }
 
+void loop() {
+  //test();
+}

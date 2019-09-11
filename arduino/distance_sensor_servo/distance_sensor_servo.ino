@@ -77,17 +77,20 @@ void turnServo(int n) {
     }
   }
 
+void test() {
+ for (servoPosition = 0; servoPosition <= 180; servoPosition += 1) {
+
+   myservo.write(servoPosition);
+   delay(15);
+   range();
+ }
+
+ for (servoPosition = 180; servoPosition >= 0; servoPosition -= 1) {
+   myservo.write(servoPosition);
+   delay(15);
+   range();
+ }
+}
 void loop() {
-  
-//  for (servoPosition = 0; servoPosition <= 180; servoPosition += 1) { 
-//  
-//    myservo.write(servoPosition);             
-//    delay(15);         
-//    range();              
-//  }
-//  for (servoPosition = 180; servoPosition >= 0; servoPosition -= 1) { 
-//    myservo.write(servoPosition);              
-//    delay(15);   
-//    range();                      
-//  }
+  //test();
 }

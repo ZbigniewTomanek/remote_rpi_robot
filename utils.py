@@ -30,7 +30,21 @@ RIGHT_ENCODER_ADDR = 0x06
 LEFT_ENCODER_ADDR = 0x07
 SERVO_W_DISTANCE_SENSOR_ADDR = 0x08
 
+# one byte commands passed to arduino
 SETTING_SPEED_FLAG = ord('q')
+FORWARD = ord('f')
+BACKWARD = ord('b')
+LEFT = ord('l')
+RIGHT = ord('r')
+STOP = ord('h')
+TURN_CAMERA_DOWN = ord('w')
+TURN_CAMERA_UP = ord('s')
+TURN_CAMERA_RIGHT = ord('d')
+TURN_CAMERA_LEFT = ord('a')
+SET_POSITION_SERVO_X_FLAG = ord('z')
+SET_POSITION_SERVO_Y_FLAG = ord('y')
+SET_SIGN_POSITIVE_FLAG = 0
+SET_SIGN_NEGATIVE_FLAG = 1
 
 
 class StoppableThread(threading.Thread):

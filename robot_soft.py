@@ -3,9 +3,8 @@ import logging
 import subprocess
 import sys
 import shlex
-import smbus2
 from utils import *
-from robot_hardware import *
+from robot_hardware import encoders, drive_control, distance_sensor
 
 
 class CommunicationService:
@@ -70,19 +69,6 @@ class CommunicationService:
         self.receiver_thread.stop()
 
 
-class I2CBus(object):
-    bus = None
-    address = 0x04
-
-    def __init__(self):
-        self.bus = smbus2.SMBus(1)
-
-    def write_number(self, value):
-        self.bus.write_byte(self.address, value)
-        # bus.write_byte_data(address, 0, value)
-        return -1
-
-
 class CommandExecutor:
     """Executes given command on robot"""
 
@@ -109,6 +95,9 @@ class CommandExecutor:
 
     def dispose(self):
         self.log.info('Shutting down whole system')
+
+        drive_control.stop()
+
         self.stop_streaming()
         self.communicator.dispose()
 

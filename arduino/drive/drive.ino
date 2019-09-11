@@ -39,7 +39,8 @@ void setup() {
   Wire.onRequest(sendData);
 
   halt();
-  applaySpeed();
+  applySpeed();
+  applySpeed();
 
   servoH.attach(9);
   servoV.attach(10);
@@ -101,7 +102,7 @@ void turnServoV(int n) {
 bool increaseSpeed(int n) {
   if(speed + n <= MAX_SPEED) {
     speed += n; 
-    applaySpeed();
+    applySpeed();
     return true;
   } else {
     return false;
@@ -111,14 +112,14 @@ bool increaseSpeed(int n) {
 bool decreaseSpeed(int n) {
   if(speed - n >= 0) {
     speed -= n;
-    applaySpeed();
+    applySpeed();
     return true;
   } else {
     return false;
   }
 }
 
-void applaySpeed() {
+void applySpeed() {
  motorRF.setSpeed(speed);
  motorRB.setSpeed(speed);
  motorLF.setSpeed(speed);
@@ -165,6 +166,7 @@ void left() {
 void forward(){
   if(Forward == false)
    halt();
+   
   Forward = true;
   motorLF.run(FORWARD);
   motorLB.run(BACKWARD);
@@ -176,6 +178,7 @@ void forward(){
 void backward(){
   if(Backward == false)
    halt();
+   
   Backward = true;
   motorLF.run(BACKWARD);
   motorLB.run(FORWARD);
@@ -184,67 +187,70 @@ void backward(){
  
 }
 
-boolean s = false;
-boolean x = false;
-boolean y = false;
-boolean sign = false;
+boolean set_speed = false;
+boolean move_in_x_axis = false;
+boolean move_in_y_axis = false;
+boolean got_sign_of_value = false;
 int minus = 1;
 
 void executeCommand(int message) {
  Serial.println(message);
  
- if(x == true && sign == true) {
+ if(move_in_x_axis == true && got_sign_of_value == true) {
   turnServoH(minus * message);
-  x = false;
-  sign = false;
+  move_in_x_axis = false;
+  got_sign_of_value = false;
  }
 
- if(y == true && sign == true) {
+ if(move_in_y_axis == true && got_sign_of_value == true) {
   turnServoV(minus * message);
-  y = false;
-  sign = false;
+  move_in_y_axis = false;
+  got_sign_of_value = false;
  }
 
- if((x == true && sign == false) || (y  == true && sign == false)) {
+ if((move_in_x_axis == true && got_sign_of_value == false) || (move_in_y_axis == true && got_sign_of_value == false)) {
+  
   if(message == 0)
     minus = -1;
   else
     minus = 1;
-    sign = true;
+
+  got_sign_of_value = true;
  }
 
-  if(s == true) {
+  if(set_speed == true) {
     speed = message;
-    applaySpeed();
-    s = false;
+    applySpeed();
+    set_speed = false;
  }
   
- if(s == false && x == false && y == false) {
+ if(set_speed == false && move_in_x_axis == false && move_in_y_axis == false) {
   char msg = message;
+  
   switch(msg) {
      case 'f': forward();
         break;
-     case'b': backward();
+     case 'b': backward();
       break;
-      case'r': right();
+      case 'r': right();
       break;
-     case'l': left();
+     case 'l': left();
       break;
-     case'h': halt();
+     case 'h': halt();
       break;
-     case'w': turnServoV(-10);
+     case 'w': turnServoV(-10);
       break;
-     case's': turnServoV(10);
+     case 's': turnServoV(10);
       break;
-     case'a': turnServoH(10);
+     case 'a': turnServoH(10);
       break;
-     case'd': turnServoH(-10);
+     case 'd': turnServoH(-10);
       break;
-     case'q': s = true;
+     case 'q': set_speed = true;
       break;
-     case'z': x = true;
+     case'z': move_in_x_axis = true;
       break;
-     case'y': y = true;
+     case'y': move_in_y_axis = true;
       break;
     }
  }
@@ -260,11 +266,6 @@ void receiveData(int byteCount){
 }
 
 
-
-int i;
 void loop() {
  
-  
-
-
 }

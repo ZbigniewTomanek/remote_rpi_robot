@@ -40,10 +40,11 @@ class I2cDevice:
 
 
 class Drive(I2cDevice):
-    speed = 255
+    speed = 180
 
     def __init__(self, address):
         self.address = address
+        self.set_speed(self.speed)
 
     def set_speed(self, speed):
         try:
@@ -56,7 +57,57 @@ class Drive(I2cDevice):
             log.error('Value of robot speed was not set')
 
     def forward(self):
-        self.write()
+        self.write(FORWARD)
+
+    def backward(self):
+        self.write(BACKWARD)
+
+    def left(self):
+        self.write(LEFT)
+
+    def right(self):
+        self.write(RIGHT)
+
+    def stop(self):
+        self.write(STOP)
+
+    def turn_camera_right(self):
+        self.write(TURN_CAMERA_RIGHT)
+
+    def turn_camera_left(self):
+        self.write(TURN_CAMERA_LEFT)
+
+    def turn_camera_up(self):
+        self.write(TURN_CAMERA_UP)
+
+    def turn_camera_down(self):
+        self.write(TURN_CAMERA_DOWN)
+
+    def set_camera_position_x(self, pos):
+        if abs(pos) > 90:
+            log.error('Rotating camera in x for {} degrees is not possible'.format(pos))
+
+        if pos < 0:
+            self.write(SET_POSITION_SERVO_X_FLAG)
+            self.write(SET_SIGN_NEGATIVE_FLAG)
+            self.write(-pos)
+        else:
+            self.write(SET_POSITION_SERVO_X_FLAG)
+            self.write(SET_SIGN_POSITIVE_FLAG)
+            self.write(pos)
+
+    def set_camera_position_y(self, pos):
+        if abs(pos) > 90:
+            log.error('Rotating camera in y for {} degrees is not possible'.format(pos))
+
+        if pos < 0:
+            self.write(SET_POSITION_SERVO_Y_FLAG)
+            self.write(SET_SIGN_NEGATIVE_FLAG)
+            self.write(-pos)
+        else:
+            self.write(SET_POSITION_SERVO_Y_FLAG)
+            self.write(SET_SIGN_POSITIVE_FLAG)
+            self.write(pos)
 
 
 class Encoder(I2cDevice):
