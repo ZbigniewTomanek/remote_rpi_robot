@@ -41,12 +41,17 @@ class I2cDevice:
 
 class Drive(I2cDevice):
     speed = 180
+    state = STOP_ROBOT_CMD
 
     def __init__(self, address):
         self.address = address
         self.set_speed(self.speed)
 
     def set_speed(self, speed):
+        if speed < 0 or speed > 255:
+            log.error('Wrong speed value')
+            return
+
         try:
             self.write(SETTING_SPEED_FLAG)
             self.write(speed)
@@ -58,18 +63,23 @@ class Drive(I2cDevice):
 
     def forward(self):
         self.write(FORWARD)
+        self.state = RUN_FORWARD_CMD
 
     def backward(self):
         self.write(BACKWARD)
+        self.state = RUN_BACKWARD_CMD
 
     def left(self):
         self.write(LEFT)
+        self.state = RUN_LEFT_CMD
 
     def right(self):
         self.write(RIGHT)
+        self.state = RUN_RIGHT_CMD
 
     def stop(self):
         self.write(STOP)
+        self.state = STOP_ROBOT_CMD
 
     def turn_camera_right(self):
         self.write(TURN_CAMERA_RIGHT)
