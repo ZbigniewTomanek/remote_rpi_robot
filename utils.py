@@ -13,8 +13,8 @@ FIFO_FILE = 'fifo264'
 
 # values used for socket communication
 HOST = '127.0.0.1'
-SERVER = '192.168.100.13'
-PORT = 42069
+SERVER = '192.168.100.18'
+PORT = 56611
 BUFF_SIZE = 1024
 
 LOGNAME = 'robot_log.txt'
@@ -111,13 +111,14 @@ class CommunicationClient(Observable):
 
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        self.receiver_thread = StoppableThread(target=self.receive())
-        self.receiver_thread.start()
+        self.receiver_thread = None
 
     def connect(self):
         logging.info('Trying connect to server')
         self.sock.connect((SERVER, PORT))
+
+        self.receiver_thread = StoppableThread(target=self.receive())
+        self.receiver_thread.start()
 
     def dispose(self):
         self.receiver_thread.stop()

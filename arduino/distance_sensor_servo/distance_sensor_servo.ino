@@ -82,15 +82,13 @@ void test() {
 
    myservo.write(servoPosition);
    delay(15);
-   range();
  }
 
  for (servoPosition = 180; servoPosition >= 0; servoPosition -= 1) {
    myservo.write(servoPosition);
    delay(15);
-   range();
  }
 }
 void loop() {
-  //test();
+  test();
 }

@@ -7,7 +7,7 @@ from utils import *
 import logging
 
 communicator = None  # type: CommunicationClient
-
+root = Tk()
 
 def open_pipe():
     process = subprocess.Popen(
@@ -109,20 +109,37 @@ class DistanceObserver(Observer):
             distance = value['distance']
             logging.log(str(value))
 
+def configure_logger():
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    logging.basicConfig(filename=LOGNAME,
+                        filemode='a',
+                        format=formatter,
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+
+    logging.getLogger().addHandler(handler)
+
 
 def init():
+    configure_logger()
+
     global communicator
     communicator = CommunicationClient()
 
     try:
         communicator.connect()
     except ConnectionError:
+        print('chuj')
         logging.info('Cant connect to server')
         return
 
     communicator.attach_observer(DistanceObserver())
 
-    root = Tk()
     frame = Frame(root, width=100, height=100)
     frame.bind("<KeyPress>", key_pressed)
     frame.bind("<KeyRelease>", key_released)
