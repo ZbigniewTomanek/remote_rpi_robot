@@ -1,5 +1,3 @@
-import socket
-import logging
 import subprocess
 import sys
 import shlex
@@ -252,6 +250,8 @@ def init():
     t = StoppableThread(target=dont_crash, args=(communicator,))
     t.start()
 
+
+init()
 
 if __name__ == '__main__':
     init()
