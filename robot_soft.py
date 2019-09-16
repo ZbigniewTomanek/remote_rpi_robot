@@ -27,7 +27,7 @@ class CommunicationService:
             s.listen()
 
             conn, addr = s.accept()
-            logger.info('Client connected from', addr)
+            logger.info('Client connected from {}'.format(addr))
             self.client = conn
 
             self.receiver_thread = StoppableThread(target=self.receive)
@@ -40,7 +40,7 @@ class CommunicationService:
                     bits = self.client.recv(BUFF_SIZE)
                     message = bits.decode('ascii')
 
-                    logger.info('Received message:', message)
+                    logger.info('Received message: {}'.format(message))
 
                     message = json.loads(message)
 
@@ -54,11 +54,11 @@ class CommunicationService:
 
     def send(self, message):
         if self.client:
-            logger.info('Sending message:', message)
+            logger.info('Sending message: {}'.format(message))
             message = json.dumps(message)
             self.client.send(bytearray(message, 'ascii'))
         else:
-            logger.error('There is no client to send message:', message)
+            logger.error('There is no client to send message: {}'.format(message))
 
     def dispose(self):
         if self.client:
@@ -78,7 +78,7 @@ class CommandExecutor:
         self.communicator = communicator
 
     def execute(self, message):
-        logger.info('Received command:', message)
+        logger.info('Received command: {}'.format(message))
 
         data = message.split(' ')
 
