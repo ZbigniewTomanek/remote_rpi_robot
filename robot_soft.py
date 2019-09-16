@@ -9,18 +9,15 @@ from robot_hardware import encoders, drive_control, distance_sensor
 class CommunicationService:
     log = logging.getLogger('Communication Service')
     client = None
+    receiver_thread = None
 
     def __init__(self, executor):
         self.cmd_executor = executor
         executor.attach_communicator(self)
 
-        self.server_thread = StoppableThread(target=self.server_listener)
-        self.server_thread.start()
+        self.get_connection()
 
-        self.receiver_thread = StoppableThread(target=self.receive)
-        self.receiver_thread.start()
-
-    def server_listener(self):
+    def get_connection(self):
         """
         Keeps on listening for incoming connection request and connects a client when there is no current session
         """
@@ -28,11 +25,12 @@ class CommunicationService:
             s.bind((HOST, PORT))
             s.listen()
 
-            while True:
-                if not self.client:
-                    conn, addr = s.accept()
-                    self.log.info('Client connected from', addr)
-                    self.client = conn
+            conn, addr = s.accept()
+            self.log.info('Client connected from', addr)
+            self.client = conn
+
+            self.receiver_thread = StoppableThread(target=self.receive)
+            self.receiver_thread.start()
 
     def receive(self):
         while True:
@@ -51,7 +49,7 @@ class CommunicationService:
                 except ConnectionResetError:
                     self.log.info('Connection with client was closed')
                     self.cmd_executor.execute(CLIENT_LOST)
-                    self.client = None
+                    self.dispose()
 
     def send(self, message):
         if self.client:
@@ -65,8 +63,8 @@ class CommunicationService:
         if self.client:
             self.client.close()
 
-        self.server_thread.stop()
         self.receiver_thread.stop()
+        self.client = None
 
 
 class CommandExecutor:
