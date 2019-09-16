@@ -1,5 +1,4 @@
 import subprocess
-import sys
 import shlex
 from utils import *
 import json
@@ -46,7 +45,7 @@ class CommunicationService:
                     if type(message) == str:
                         self.cmd_executor.execute(message)
 
-                except ConnectionResetError:
+                except socket.error:
                     self.log.info('Connection with client was closed')
                     self.cmd_executor.execute(CLIENT_LOST)
                     self.dispose()

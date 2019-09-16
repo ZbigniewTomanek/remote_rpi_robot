@@ -2,6 +2,7 @@ import threading
 import json
 import socket
 import logging
+import sys
 
 # values used for video streaming
 from typing import List
@@ -72,6 +73,22 @@ SET_SIGN_POSITIVE_FLAG = 0
 SET_SIGN_NEGATIVE_FLAG = 1
 
 
+def configure_logger():
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    logging.basicConfig(filename=LOGNAME,
+                        filemode='a',
+                        format=formatter,
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+
+    logging.getLogger().addHandler(handler)
+
+
 class StoppableThread(threading.Thread):
     """Thread class with a stop() method. The thread itself has to check
     regularly for the stopped() condition."""
@@ -129,11 +146,10 @@ class CommunicationClient(Observable):
             try:
                 bits = self.sock.recv(BUFF_SIZE)
                 message = bits.decode('ascii')
-
-                message = json.loads(message)
                 logging.info('Received message:', message)
+                message = json.loads(message)
 
-            except ConnectionResetError:
+            except socket.error:
                 logging.info('Connection was remotely closed, shutting down')
                 self.dispose()
 
@@ -141,3 +157,8 @@ class CommunicationClient(Observable):
         message = json.dumps(message)
         logging.info('Sending message:', message)
         self.sock.send(bytearray(message, 'ascii'))
+
+
+configure_logger()
+
+logging = logging.getLogger()

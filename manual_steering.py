@@ -4,7 +4,6 @@ import shlex
 import cv2
 import time
 from utils import *
-import logging
 
 communicator = None  # type: CommunicationClient
 root = Tk()
@@ -110,24 +109,8 @@ class DistanceObserver(Observer):
             distance = value['distance']
             logging.log(str(value))
 
-def configure_logger():
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    logging.basicConfig(filename=LOGNAME,
-                        filemode='a',
-                        format=formatter,
-                        datefmt='%H:%M:%S',
-                        level=logging.DEBUG)
-
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(formatter)
-
-    logging.getLogger().addHandler(handler)
-
 
 def init():
-    configure_logger()
 
     global communicator
     communicator = CommunicationClient()
