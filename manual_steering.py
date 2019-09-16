@@ -9,6 +9,7 @@ import logging
 communicator = None  # type: CommunicationClient
 root = Tk()
 
+
 def open_pipe():
     process = subprocess.Popen(
         shlex.split(READ_STREAM),
