@@ -14,7 +14,7 @@ FIFO_FILE = 'fifo264'
 # values used for socket communication
 HOST = '0.0.0.0'
 SERVER = '192.168.100.18'
-PORT = 27182
+PORT = 6760
 BUFF_SIZE = 1024
 
 LOGNAME = 'robot_log.txt'
