@@ -1,12 +1,14 @@
 import subprocess
 import shlex
-from utils import *
+from constants import *
+import socket
+from utils import StoppableThread
+from utils import soft_logger as logger
 import json
 from robot_hardware import encoders, drive_control, distance_sensor
 
 
 class CommunicationService:
-    log = soft_logger.getLogger('Communication Service')
     client = None
     receiver_thread = None
 
@@ -25,7 +27,7 @@ class CommunicationService:
             s.listen()
 
             conn, addr = s.accept()
-            self.log.info('Client connected from', addr)
+            logger.info('Client connected from', addr)
             self.client = conn
 
             self.receiver_thread = StoppableThread(target=self.receive)
@@ -38,7 +40,7 @@ class CommunicationService:
                     bits = self.client.recv(BUFF_SIZE)
                     message = bits.decode('ascii')
 
-                    self.log.info('Received message:', message)
+                    logger.info('Received message:', message)
 
                     message = json.loads(message)
 
@@ -46,17 +48,17 @@ class CommunicationService:
                         self.cmd_executor.execute(message)
 
                 except socket.error:
-                    self.log.info('Connection with client was closed')
+                    logger.info('Connection with client was closed')
                     self.cmd_executor.execute(CLIENT_LOST)
                     self.dispose()
 
     def send(self, message):
         if self.client:
-            self.log.info('Sending message:', message)
+            logger.info('Sending message:', message)
             message = json.dumps(message)
             self.client.send(bytearray(message, 'ascii'))
         else:
-            self.log.error('There is no client to send message:', message)
+            logger.error('There is no client to send message:', message)
 
     def dispose(self):
         if self.client:
@@ -69,8 +71,6 @@ class CommunicationService:
 class CommandExecutor:
     """Executes given command on robot"""
 
-    log = soft_logger.getLogger('Command Executor')
-
     communicator = None
     streaming_thread = None
 
@@ -78,7 +78,7 @@ class CommandExecutor:
         self.communicator = communicator
 
     def execute(self, message):
-        self.log.info('Received command:', message)
+        logger.info('Received command:', message)
 
         data = message.split(' ')
 
@@ -147,7 +147,7 @@ class CommandExecutor:
             distance_sensor.set_delta(delta)
 
     def dispose(self):
-        self.log.info('Shutting down whole system')
+        logger.info('Shutting down whole system')
 
         drive_control.stop()
 
@@ -161,7 +161,7 @@ class CommandExecutor:
         self.streaming_thread.start()
 
     def stop_streaming(self):
-        self.log.info('Streaming service closed')
+        logger.info('Streaming service closed')
         self.streaming_thread.stop()
 
     def start_network_streaming(self):
@@ -169,11 +169,11 @@ class CommandExecutor:
         self.streaming_thread.start()
 
     def stop_network_streaming(self):
-        self.log.info('Streaming service closed')
+        logger.info('Streaming service closed')
         self.streaming_thread.stop()
 
     def network_stream_worker(self):
-        self.log.info('Starting streaming service')
+        logger.info('Starting streaming service')
 
         process = subprocess.Popen(
             shlex.split(START_NETWORK_STREAM),
@@ -185,13 +185,13 @@ class CommandExecutor:
                 break
             if output:
                 self.communicator.send(CANT_OPEN_STREAM)
-                self.log.error(output.strip())
+                logger.error(output.strip())
 
         rc = process.poll()
         return rc
 
     def stream_worker(self):
-        self.log.info('Starting streaming service')
+        logger.info('Starting streaming service')
 
         process = subprocess.Popen(
             shlex.split(START_STREAM),
@@ -205,26 +205,10 @@ class CommandExecutor:
                 break
             if output:
                 self.communicator.send(CANT_OPEN_STREAM)
-                self.log.error(output.strip())
+                logger.error(output.strip())
 
         rc = process.poll()
         return rc
-
-
-def configure_logger():
-    formatter = soft_logger.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    soft_logger.basicConfig(filename=LOGNAME,
-                        filemode='a',
-                        format=formatter,
-                        datefmt='%H:%M:%S',
-                        level=soft_logger.DEBUG)
-
-    handler = soft_logger.StreamHandler(sys.stdout)
-    handler.setLevel(soft_logger.DEBUG)
-    handler.setFormatter(formatter)
-
-    soft_logger.getLogger().addHandler(handler)
 
 
 def dont_crash(communicator):
@@ -233,13 +217,12 @@ def dont_crash(communicator):
 
         if distance < MIN_DISTANCE and drive_control.state != STOP_ROBOT_CMD:
             drive_control.stop()
-            soft_logger.error('Stopping robot to avoid crash!')
+            logger.error('Stopping robot to avoid crash!')
             communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
 
 
 def init():
-    configure_logger()
-    soft_logger.info('Script was launched')
+    logger.info('Script was launched')
 
     executor = CommandExecutor()
     communicator = CommunicationService(executor)

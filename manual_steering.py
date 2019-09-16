@@ -3,7 +3,11 @@ from tkinter import *
 import shlex
 import cv2
 import time
-from utils import *
+import threading
+from utils import Observer, CommunicationClient
+from utils import steering_logger as logger
+from constants import *
+
 
 communicator = None  # type: CommunicationClient
 root = Tk()
@@ -44,7 +48,7 @@ def start_stream():
     t.start()
 
     time.sleep(1)
-    steering_logger.info('Opened streaming pipe')
+    logger.info('Opened streaming pipe')
 
     communicator.attach_observer(StreamObserver())
     communicator.send(START_STREAM_CMD)
@@ -107,7 +111,7 @@ class DistanceObserver(Observer):
         if type(value) == dict:
             angle = value['angle']
             distance = value['distance']
-            steering_logger.log(str(value))
+            logger.log(str(value))
 
 
 def init():
@@ -119,7 +123,7 @@ def init():
         communicator.connect()
     except ConnectionError:
         print('chuj')
-        steering_logger.info('Cant connect to server')
+        logger.info('Cant connect to server')
         return
 
     communicator.attach_observer(DistanceObserver())
