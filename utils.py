@@ -131,7 +131,7 @@ class CommunicationClient(Observable):
         self.receiver_thread = None
 
     def connect(self):
-        logging.info('Trying connect to server')
+        utils_logger.info('Trying connect to server')
         self.sock.connect((SERVER, PORT))
 
         self.receiver_thread = StoppableThread(target=self.receive())
@@ -146,19 +146,20 @@ class CommunicationClient(Observable):
             try:
                 bits = self.sock.recv(BUFF_SIZE)
                 message = bits.decode('ascii')
-                logging.info('Received message:', message)
+                utils_logger.info('Received message: {}'.format(message))
                 message = json.loads(message)
 
             except socket.error:
-                logging.info('Connection was remotely closed, shutting down')
+                utils_logger.info('Connection was remotely closed, shutting down')
                 self.dispose()
 
     def send(self, message):
         message = json.dumps(message)
-        logging.info('Sending message:', message)
+        utils_logger.info('Sending message: {}'.format(message))
         self.sock.send(bytearray(message, 'ascii'))
 
 
 configure_logger()
-
-logging = logging.getLogger()
+steering_logger = logging.getLogger('Steering')
+soft_logger = logging.getLogger('Soft')
+utils_logger = logging.getLogger('Utils')

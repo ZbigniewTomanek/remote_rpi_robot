@@ -6,7 +6,7 @@ from robot_hardware import encoders, drive_control, distance_sensor
 
 
 class CommunicationService:
-    log = logging.getLogger('Communication Service')
+    log = soft_logger.getLogger('Communication Service')
     client = None
     receiver_thread = None
 
@@ -69,7 +69,7 @@ class CommunicationService:
 class CommandExecutor:
     """Executes given command on robot"""
 
-    log = logging.getLogger('Command Executor')
+    log = soft_logger.getLogger('Command Executor')
 
     communicator = None
     streaming_thread = None
@@ -212,19 +212,19 @@ class CommandExecutor:
 
 
 def configure_logger():
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = soft_logger.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    logging.basicConfig(filename=LOGNAME,
+    soft_logger.basicConfig(filename=LOGNAME,
                         filemode='a',
                         format=formatter,
                         datefmt='%H:%M:%S',
-                        level=logging.DEBUG)
+                        level=soft_logger.DEBUG)
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
+    handler = soft_logger.StreamHandler(sys.stdout)
+    handler.setLevel(soft_logger.DEBUG)
     handler.setFormatter(formatter)
 
-    logging.getLogger().addHandler(handler)
+    soft_logger.getLogger().addHandler(handler)
 
 
 def dont_crash(communicator):
@@ -233,13 +233,13 @@ def dont_crash(communicator):
 
         if distance < MIN_DISTANCE and drive_control.state != STOP_ROBOT_CMD:
             drive_control.stop()
-            logging.error('Stopping robot to avoid crash!')
+            soft_logger.error('Stopping robot to avoid crash!')
             communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
 
 
 def init():
     configure_logger()
-    logging.info('Script was launched')
+    soft_logger.info('Script was launched')
 
     executor = CommandExecutor()
     communicator = CommunicationService(executor)

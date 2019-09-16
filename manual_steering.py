@@ -44,7 +44,7 @@ def start_stream():
     t.start()
 
     time.sleep(1)
-    logging.info('Opened streaming pipe')
+    steering_logger.info('Opened streaming pipe')
 
     communicator.attach_observer(StreamObserver())
     communicator.send(START_STREAM_CMD)
@@ -107,7 +107,7 @@ class DistanceObserver(Observer):
         if type(value) == dict:
             angle = value['angle']
             distance = value['distance']
-            logging.log(str(value))
+            steering_logger.log(str(value))
 
 
 def init():
@@ -119,7 +119,7 @@ def init():
         communicator.connect()
     except ConnectionError:
         print('chuj')
-        logging.info('Cant connect to server')
+        steering_logger.info('Cant connect to server')
         return
 
     communicator.attach_observer(DistanceObserver())
