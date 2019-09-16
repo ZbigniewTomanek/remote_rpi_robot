@@ -5,7 +5,7 @@ import adafruit_vl53l0x
 
 import time
 import logging
-from utils import *
+from constants import *
 
 log = logging.getLogger('Hardware')
 
