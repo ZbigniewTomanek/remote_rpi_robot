@@ -5,10 +5,7 @@ import socket
 from utils import StoppableThread
 from utils import soft_logger as logger
 import json
-#from robot_hardware import encoders, drive_control, distance_sensor
-
-drive_control = None
-distance_sensor = None
+from robot_hardware import encoders, drive_control, distance_sensor
 
 
 class CommunicationService:
@@ -18,7 +15,7 @@ class CommunicationService:
     def __init__(self, executor):
         self.cmd_executor = executor
         executor.attach_communicator(self)
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket()
 
         self.get_connection()
 
@@ -28,33 +25,30 @@ class CommunicationService:
         """
 
         self.sock.bind((HOST, PORT))
-        self.sock.listen()
+        self.sock.listen(10)
 
         conn, addr = self.sock.accept()
         logger.info('Client connected from {}'.format(addr))
         self.client = conn
 
-        #self.receiver_thread = StoppableThread(target=self.receive)
-        #self.receiver_thread.start()
+        self.receiver_thread = StoppableThread(target=self.receive)
+        self.receiver_thread.start()
 
     def receive(self):
         while True:
-
             if self.client:
                 try:
                     bits = self.client.recv(BUFF_SIZE)
                     message = bits.decode('ascii')
 
                     if message:
-                        logger.info('Received message: {}'.format(message))
-
+                        logger.info('d message: {}'.format(message))
                         message = json.loads(message)
 
                         if type(message) == str:
                             self.cmd_executor.execute(message)
 
                 except socket.error as e:
-                    print('kuuuuuutas')
                     logger.error(str(e))
                     logger.info('Connection with client was closed')
                     self.cmd_executor.execute(CLIENT_LOST)
@@ -235,17 +229,22 @@ def dont_crash(communicator):
             communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
 
 
+from tkinter import *
+root = Tk()
+
+
 def init():
     logger.info('Script was launched')
 
     executor = CommandExecutor()
     communicator = CommunicationService(executor)
 
-    #t = StoppableThread(target=dont_crash, args=(communicator,))
-    #t.start()
+    frame = Frame(root, width=100, height=100)
+    frame.focus_set()
+    frame.pack()
 
+    root.mainloop()
 
-init()
 
 if __name__ == '__main__':
     init()

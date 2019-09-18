@@ -81,7 +81,7 @@ def key_pressed(event):
     elif c == ',':
         communicator.send(MEASURE_DISTANCE_CMD)
     elif c == '.':
-        communicator.send(START_NETWORK_STREAM)
+        communicator.send(START_NETWORK_STREAM_CMD)
 
     if c == '+':
         if key_pressed.speed + 10 <= 255:
@@ -133,6 +133,8 @@ def init():
     frame.bind("<KeyRelease>", key_released)
     frame.focus_set()
     frame.pack()
+
+    root.mainloop()
 
 
 if __name__ == '__main__':

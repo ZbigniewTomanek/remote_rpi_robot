@@ -46,7 +46,7 @@ class CommunicationClient(Observable):
     """Uses a socket in order to connect to robot server"""
 
     def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket()
         self.receiver_thread = None
 
     def connect(self):
