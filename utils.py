@@ -58,6 +58,7 @@ class CommunicationClient(Observable):
 
     def dispose(self):
         self.receiver_thread.stop()
+        self.receiver_thread.join()
         self.sock.close()
 
     def receive(self):

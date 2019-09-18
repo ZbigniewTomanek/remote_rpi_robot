@@ -172,6 +172,7 @@ class CommandExecutor:
     def stop_streaming(self):
         logger.info('Streaming service closed')
         self.streaming_thread.stop()
+        self.streaming_thread.join()
 
     def start_network_streaming(self):
         self.streaming_thread = StoppableThread(target=self.network_stream_worker)
@@ -180,6 +181,7 @@ class CommandExecutor:
     def stop_network_streaming(self):
         logger.info('Streaming service closed')
         self.streaming_thread.stop()
+        self.streaming_thread.join()
 
     def network_stream_worker(self):
         logger.info('Starting streaming service')
