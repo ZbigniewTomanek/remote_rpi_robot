@@ -85,6 +85,7 @@ def key_pressed(event):
 
     elif c == 'z':
         communicator.send(SHUTDOWN_CMD)
+        root.quit()
 
     if c == '+':
         if key_pressed.speed + 10 <= 255:
