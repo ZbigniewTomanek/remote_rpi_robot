@@ -5,7 +5,10 @@ import socket
 from utils import StoppableThread
 from utils import soft_logger as logger
 import json
-from robot_hardware import encoders, drive_control, distance_sensor
+#from robot_hardware import encoders, drive_control, distance_sensor
+
+drive_control = None
+distance_sensor = None
 
 
 class CommunicationService:
