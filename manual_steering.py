@@ -121,9 +121,9 @@ def init():
 
     try:
         communicator.connect()
-    except ConnectionError:
-        print('chuj')
-        logger.info('Cant connect to server')
+    except ConnectionError as e:
+        print(e)
+        logger.error('Cant connect to server')
         return
 
     communicator.attach_observer(DistanceObserver())
