@@ -44,6 +44,9 @@ def start_stream():
 
                 cap.release()
                 cv2.destroyAllWindows()
+            elif value == CANT_OPEN_STREAM:
+                logger.error('Cant stream video to opencv')
+                communicator.detach_observer(self)
 
     t = threading.Thread(target=open_pipe)
     t.start()
@@ -82,13 +85,12 @@ def key_pressed(event):
     elif c == ',':
         communicator.send(MEASURE_DISTANCE_CMD)
     elif c == '.':
-        communicator.send(START_NETWORK_STREAM_CMD)
-
-    elif c == 'z':
         communicator.send(SHUTDOWN_CMD)
-        root.quit()
         sys.exit(0)
-
+    elif c == 'x':
+        communicator.send(START_NETWORK_STREAM_CMD)
+    elif c == 'z':
+        start_stream()
     if c == '+':
         if key_pressed.speed + 10 <= 255:
             key_pressed.speed += 10
