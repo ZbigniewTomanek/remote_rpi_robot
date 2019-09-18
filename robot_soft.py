@@ -5,6 +5,7 @@ import socket
 from utils import StoppableThread
 from utils import soft_logger as logger
 import json
+import sys
 from robot_hardware import encoders, drive_control, distance_sensor
 
 
@@ -156,8 +157,9 @@ class CommandExecutor:
 
         self.stop_streaming()
         self.communicator.dispose()
+        sys.exit(0)
 
-        subprocess.call([SHUTDOWN])
+        # subprocess.call([SHUTDOWN])
 
     def start_streaming(self):
         self.streaming_thread = StoppableThread(target=self.stream_worker)
