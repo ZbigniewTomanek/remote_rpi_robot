@@ -51,6 +51,7 @@ class CommunicationService:
                             self.cmd_executor.execute(message)
 
                 except socket.error as e:
+                    print('kuuuuuutas')
                     logger.error(str(e))
                     logger.info('Connection with client was closed')
                     self.cmd_executor.execute(CLIENT_LOST)
