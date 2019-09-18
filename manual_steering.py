@@ -6,6 +6,7 @@ import time
 import threading
 from utils import Observer, CommunicationClient
 from utils import steering_logger as logger
+import sys
 from constants import *
 
 
@@ -86,6 +87,7 @@ def key_pressed(event):
     elif c == 'z':
         communicator.send(SHUTDOWN_CMD)
         root.quit()
+        sys.exit(0)
 
     if c == '+':
         if key_pressed.speed + 10 <= 255:
