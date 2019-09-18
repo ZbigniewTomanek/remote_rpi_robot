@@ -35,6 +35,7 @@ class CommunicationService:
 
     def receive(self):
         while True:
+            print('chuuuj')
             if self.client:
                 try:
                     bits = self.client.recv(BUFF_SIZE)
