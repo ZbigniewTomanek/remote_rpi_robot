@@ -15,6 +15,7 @@ class CommunicationService:
     def __init__(self, executor):
         self.cmd_executor = executor
         executor.attach_communicator(self)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.get_connection()
 
@@ -22,20 +23,20 @@ class CommunicationService:
         """
         Keeps on listening for incoming connection request and connects a client when there is no current session
         """
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((HOST, PORT))
-            s.listen()
 
-            conn, addr = s.accept()
-            logger.info('Client connected from {}'.format(addr))
-            self.client = conn
+        self.sock.bind((HOST, PORT))
+        self.sock.listen()
 
-            self.receiver_thread = StoppableThread(target=self.receive)
-            self.receiver_thread.start()
+        conn, addr = self.sock.accept()
+        logger.info('Client connected from {}'.format(addr))
+        self.client = conn
+
+        self.receiver_thread = StoppableThread(target=self.receive)
+        self.receiver_thread.start()
 
     def receive(self):
         while True:
-            print('chuuuj')
+
             if self.client:
                 try:
                     bits = self.client.recv(BUFF_SIZE)
@@ -66,6 +67,8 @@ class CommunicationService:
     def dispose(self):
         if self.client:
             self.client.close()
+
+        self.sock.close()
 
         self.receiver_thread.stop()
         self.client = None
