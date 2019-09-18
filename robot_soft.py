@@ -31,8 +31,8 @@ class CommunicationService:
         logger.info('Client connected from {}'.format(addr))
         self.client = conn
 
-        self.receiver_thread = StoppableThread(target=self.receive)
-        self.receiver_thread.start()
+        #self.receiver_thread = StoppableThread(target=self.receive)
+        #self.receiver_thread.start()
 
     def receive(self):
         while True:
