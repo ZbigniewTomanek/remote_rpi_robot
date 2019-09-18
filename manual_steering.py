@@ -83,6 +83,9 @@ def key_pressed(event):
     elif c == '.':
         communicator.send(START_NETWORK_STREAM_CMD)
 
+    elif c == 'z':
+        communicator.send(SHUTDOWN_CMD)
+
     if c == '+':
         if key_pressed.speed + 10 <= 255:
             key_pressed.speed += 10

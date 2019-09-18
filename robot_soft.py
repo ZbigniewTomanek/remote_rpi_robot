@@ -10,7 +10,6 @@ from robot_hardware import encoders, drive_control, distance_sensor
 
 class CommunicationService:
     client = None
-    receiver_thread = None
 
     def __init__(self, executor):
         self.cmd_executor = executor
@@ -30,9 +29,6 @@ class CommunicationService:
         conn, addr = self.sock.accept()
         logger.info('Client connected from {}'.format(addr))
         self.client = conn
-
-        self.receiver_thread = StoppableThread(target=self.receive)
-        self.receiver_thread.start()
 
     def receive(self):
         while True:
@@ -67,8 +63,6 @@ class CommunicationService:
             self.client.close()
 
         self.sock.close()
-
-        self.receiver_thread.stop()
         self.client = None
 
         self.get_connection()
@@ -220,31 +214,24 @@ class CommandExecutor:
 
 
 def dont_crash(communicator):
-    while True:
-        angle, distance = distance_sensor.range()
+    angle, distance = distance_sensor.range()
 
-        if distance < MIN_DISTANCE and drive_control.state != STOP_ROBOT_CMD:
-            drive_control.stop()
-            logger.error('Stopping robot to avoid crash!')
-            communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
-
-
-from tkinter import *
-root = Tk()
+    if distance < MIN_DISTANCE and drive_control.state != STOP_ROBOT_CMD:
+        drive_control.stop()
+        logger.error('Stopping robot to avoid crash!')
+        communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
 
 
-def init():
+def main_loop():
     logger.info('Script was launched')
 
     executor = CommandExecutor()
     communicator = CommunicationService(executor)
 
-    frame = Frame(root, width=100, height=100)
-    frame.focus_set()
-    frame.pack()
-
-    root.mainloop()
+    while True:
+        communicator.receive()
+        # dont_crash()
 
 
 if __name__ == '__main__':
-    init()
+    main_loop()
