@@ -40,12 +40,13 @@ class CommunicationService:
                     bits = self.client.recv(BUFF_SIZE)
                     message = bits.decode('ascii')
 
-                    logger.info('Received message: {}'.format(message))
+                    if message:
+                        logger.info('Received message: {}'.format(message))
 
-                    message = json.loads(message)
+                        message = json.loads(message)
 
-                    if type(message) == str:
-                        self.cmd_executor.execute(message)
+                        if type(message) == str:
+                            self.cmd_executor.execute(message)
 
                 except socket.error as e:
                     logger.error(str(e))

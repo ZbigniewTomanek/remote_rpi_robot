@@ -53,7 +53,7 @@ class CommunicationClient(Observable):
         utils_logger.info('Trying connect to server')
         self.sock.connect((SERVER, PORT))
 
-        self.receiver_thread = StoppableThread(target=self.receive())
+        self.receiver_thread = StoppableThread(target=self.receive)
         self.receiver_thread.start()
 
     def dispose(self):
@@ -65,8 +65,10 @@ class CommunicationClient(Observable):
             try:
                 bits = self.sock.recv(BUFF_SIZE)
                 message = bits.decode('ascii')
-                utils_logger.info('Received message: {}'.format(message))
-                message = json.loads(message)
+
+                if message:
+                    utils_logger.info(f'Received message: {message}')
+                    message = json.loads(message)
 
             except socket.error:
                 utils_logger.info('Connection was remotely closed, shutting down')
