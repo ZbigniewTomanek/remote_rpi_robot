@@ -69,7 +69,11 @@ class CommunicationClient(Observable):
 
                 if message:
                     utils_logger.info('Received message: {}'.format(message))
-                    message = json.loads(message)
+
+                    try:
+                        message = json.loads(message)
+                    except ValueError:
+                        utils_logger.error('Broken message')
 
             except socket.error:
                 utils_logger.info('Connection was remotely closed, shutting down')

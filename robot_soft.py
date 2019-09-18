@@ -39,10 +39,13 @@ class CommunicationService:
 
                     if message:
                         logger.info('d message: {}'.format(message))
-                        message = json.loads(message)
 
-                        if type(message) == str:
-                            self.cmd_executor.execute(message)
+                        try:
+                            message = json.loads(message)
+                            if type(message) == str:
+                                self.cmd_executor.execute(message)
+                        except ValueError:
+                            logger.error('Broken message')
 
                 except socket.error as e:
                     logger.error(str(e))
