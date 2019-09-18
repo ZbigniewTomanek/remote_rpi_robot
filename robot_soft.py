@@ -238,8 +238,8 @@ def init():
     executor = CommandExecutor()
     communicator = CommunicationService(executor)
 
-    t = StoppableThread(target=dont_crash, args=(communicator,))
-    t.start()
+    #t = StoppableThread(target=dont_crash, args=(communicator,))
+    #t.start()
 
 
 init()
