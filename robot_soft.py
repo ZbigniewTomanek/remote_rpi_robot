@@ -67,6 +67,8 @@ class CommunicationService:
         self.receiver_thread.stop()
         self.client = None
 
+        self.get_connection()
+
 
 class CommandExecutor:
     """Executes given command on robot"""
