@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 networkStream.py
+python3 networkStreaming.py
