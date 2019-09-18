@@ -67,7 +67,7 @@ class CommunicationClient(Observable):
                 message = bits.decode('ascii')
 
                 if message:
-                    utils_logger.info(f'Received message: {message}')
+                    utils_logger.info('Received message: {}'.format(message))
                     message = json.loads(message)
 
             except socket.error:
