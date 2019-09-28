@@ -62,7 +62,7 @@ def key_pressed(event):
     value = repr(event.char)
     c = value[1]
 
-    print(key_pressed.old_value)
+    key_pressed.key_pressed = c
     if key_pressed.old_value != c:
         if c == 'w':
             communicator.send(RUN_FORWARD_CMD)
@@ -84,8 +84,9 @@ def key_pressed(event):
         communicator.send(CAMERA_RIGHT_CMD)
     elif c == ',':
         communicator.send(MEASURE_DISTANCE_CMD)
-    elif c == '.':
+    elif c == 'q':
         communicator.send(SHUTDOWN_CMD)
+        root.quit()
         sys.exit(0)
     elif c == 'x':
         communicator.send(START_NETWORK_STREAM_CMD)
@@ -106,14 +107,12 @@ def key_pressed(event):
 
 
 key_pressed.old_value = 'h'
-key_pressed.speed = 255
+key_pressed.speed = 180
+key_pressed.key_pressed = 'h'
 
 
 def key_released(event):
-    value = repr(event.char)
-    c = value[1]
-
-    if c in 'wsad':
+    if key_pressed.key_pressed in 'wsad':
         communicator.send(STOP_ROBOT_CMD)
         key_pressed.old_value = 'h'
 
@@ -137,6 +136,8 @@ def init():
         print(e)
         logger.error('Cant connect to server')
         return
+
+    logger.info('Connection established')
 
     communicator.attach_observer(DistanceObserver())
 

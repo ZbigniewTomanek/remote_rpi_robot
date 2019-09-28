@@ -69,8 +69,6 @@ class CommunicationService:
         self.sock.close()
         self.client = None
 
-        self.get_connection()
-
 
 class CommandExecutor:
     """Executes given command on robot"""
@@ -162,6 +160,7 @@ class CommandExecutor:
         drive_control.stop()
 
         self.stop_streaming()
+        self.stop_network_streaming()
         self.communicator.dispose()
         sys.exit(0)
 
