@@ -75,8 +75,10 @@ class CommunicationService:
 class CommandExecutor:
     """Executes given command on robot"""
 
-    communicator = None
-    streaming_thread = None
+    communicator: CommunicationService = None
+    streaming_thread: StoppableThread = None
+
+    network_streaming_thread: StoppableThread = None
 
     def attach_communicator(self, communicator):
         self.communicator = communicator
@@ -100,6 +102,10 @@ class CommandExecutor:
 
         elif command == STOP_NETWORK_STREAM_CMD:
             self.stop_network_streaming()
+
+        elif command == CLIENT_LOST:
+            drive_control.stop()
+            self.communicator.get_connection()
 
         elif command == SHUTDOWN_CMD:
             self.dispose()
@@ -167,17 +173,19 @@ class CommandExecutor:
 
     def stop_streaming(self):
         logger.info('Streaming service closed')
-        self.streaming_thread.stop()
-        self.streaming_thread.join()
+        if self.streaming_thread:
+            self.streaming_thread.stop()
+            self.streaming_thread.join()
 
     def start_network_streaming(self):
-        self.streaming_thread = StoppableThread(target=self.network_stream_worker)
-        self.streaming_thread.start()
+        self.network_streaming_thread = StoppableThread(target=self.network_stream_worker)
+        self.network_streaming_thread.start()
 
     def stop_network_streaming(self):
         logger.info('Streaming service closed')
-        self.streaming_thread.stop()
-        self.streaming_thread.join()
+        if self.network_streaming_thread:
+            self.network_streaming_thread.stop()
+            self.streaming_thread.join()
 
     def network_stream_worker(self):
         logger.info('Starting streaming service')

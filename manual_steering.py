@@ -91,14 +91,14 @@ def key_pressed(event):
         communicator.send(START_NETWORK_STREAM_CMD)
     elif c == 'z':
         start_stream()
-    if c == '+':
+    elif c == '+':
         if key_pressed.speed + 10 <= 255:
             key_pressed.speed += 10
 
             msg = SET_SPEED_CMD + " " + str(key_pressed.speed)
             communicator.send(msg)
 
-    if c == '-':
+    elif c == '-':
         if key_pressed.speed - 10 >= 0:
             key_pressed.speed -= 10
             msg = SET_SPEED_CMD + " " + str(key_pressed.speed)
@@ -110,8 +110,12 @@ key_pressed.speed = 255
 
 
 def key_released(event):
-    communicator.send(STOP_ROBOT_CMD)
-    key_pressed.old_value = 'h'
+    value = repr(event.char)
+    c = value[1]
+
+    if c in 'wsad':
+        communicator.send(STOP_ROBOT_CMD)
+        key_pressed.old_value = 'h'
 
 
 class DistanceObserver(Observer):
