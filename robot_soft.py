@@ -75,10 +75,10 @@ class CommunicationService:
 class CommandExecutor:
     """Executes given command on robot"""
 
-    communicator: CommunicationService = None
-    streaming_thread: StoppableThread = None
+    communicator = None  # type: CommunicationService
 
-    network_streaming_thread: StoppableThread = None
+    streaming_thread = None  # type: StoppableThread
+    network_streaming_thread = None  # type: StoppableThread
 
     def attach_communicator(self, communicator):
         self.communicator = communicator

@@ -10,7 +10,7 @@ import sys
 from constants import *
 
 
-communicator = None  # type: CommunicationClient
+communicator: CommunicationClient = None
 root = Tk()
 
 
