@@ -89,6 +89,7 @@ def key_pressed(event):
         communicator.send(MEASURE_DISTANCE_CMD)
     elif c == 'q':
         communicator.send(SHUTDOWN_CMD)
+        os.system('xset r on')
         root.destroy()
         sys.exit(0)
     elif c == 'x':
