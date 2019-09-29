@@ -17,7 +17,8 @@ class I2cDevice:
     def write(self, value):
         try:
             with SMBus(1) as b:
-                b.write_byte_data(self.address, 0, value)
+                b.write_byte(self.address, value)
+                #b.write_byte_data(self.address, 0, value)
                 self.error_count = 0
 
         except OSError:
