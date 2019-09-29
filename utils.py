@@ -12,11 +12,14 @@ class StoppableThread(threading.Thread):
     """Thread class with a stop() method. The thread itself has to check
     regularly for the stopped() condition."""
 
+    isWorking = True
+
     def __init__(self, target, args=()):
         super(StoppableThread, self).__init__(target=target, args=args)
         self._stop_event = threading.Event()
 
     def stop(self):
+        self.isWorking = False
         self._stop_event.set()
 
     def stopped(self):

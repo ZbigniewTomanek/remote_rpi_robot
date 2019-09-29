@@ -8,10 +8,12 @@ from utils import Observer, CommunicationClient
 from utils import steering_logger as logger
 import sys
 from constants import *
+import os
 
 
 communicator: CommunicationClient = None
 root = Tk()
+os.system('xset r off')
 
 
 def open_pipe():
@@ -33,6 +35,7 @@ def start_stream():
     class StreamObserver(Observer):
         def notify(self, value):
             if value == STREAM_ENABLED:
+                logger.info('Started streaming to opencv')
                 cap = cv2.VideoCapture(FIFO_FILE)
 
                 while cap.isOpened():
@@ -86,7 +89,7 @@ def key_pressed(event):
         communicator.send(MEASURE_DISTANCE_CMD)
     elif c == 'q':
         communicator.send(SHUTDOWN_CMD)
-        root.quit()
+        root.destroy()
         sys.exit(0)
     elif c == 'x':
         communicator.send(START_NETWORK_STREAM_CMD)

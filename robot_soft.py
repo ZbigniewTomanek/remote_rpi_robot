@@ -78,6 +78,9 @@ class CommandExecutor:
     streaming_thread = None  # type: StoppableThread
     network_streaming_thread = None  # type: StoppableThread
 
+    does_streaming = True
+    does_network_streaming = True
+
     def attach_communicator(self, communicator):
         self.communicator = communicator
 
@@ -167,22 +170,26 @@ class CommandExecutor:
         # subprocess.call([SHUTDOWN])
 
     def start_streaming(self):
+        self.does_streaming = True
         self.streaming_thread = StoppableThread(target=self.stream_worker)
         self.streaming_thread.start()
 
     def stop_streaming(self):
         logger.info('Streaming service closed')
         if self.streaming_thread:
+            self.does_streaming = False
             self.streaming_thread.stop()
             self.streaming_thread.join()
 
     def start_network_streaming(self):
+        self.does_network_streaming = True
         self.network_streaming_thread = StoppableThread(target=self.network_stream_worker)
         self.network_streaming_thread.start()
 
     def stop_network_streaming(self):
         logger.info('Streaming service closed')
         if self.network_streaming_thread:
+            self.does_network_streaming = False
             self.network_streaming_thread.stop()
             self.streaming_thread.join()
 
@@ -193,7 +200,7 @@ class CommandExecutor:
             shlex.split(START_NETWORK_STREAM),
             stdout=subprocess.PIPE)
 
-        while True:
+        while self.does_network_streaming:
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
                 break
@@ -213,7 +220,7 @@ class CommandExecutor:
 
         self.communicator.send(STREAM_ENABLED)
 
-        while True:
+        while self.does_streaming:
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
                 break
