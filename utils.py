@@ -75,6 +75,7 @@ class CommunicationClient(Observable):
 
                     try:
                         message = json.loads(message)
+                        self.notify_observers(message)
                     except ValueError:
                         utils_logger.error('Broken message')
 
