@@ -40,12 +40,11 @@ class I2cDevice:
 
 
 class Drive(I2cDevice):
-    speed = 180
+    speed = 255
     state = STOP_ROBOT_CMD
 
     def __init__(self, address):
         self.address = address
-        self.set_speed(self.speed)
 
     def set_speed(self, speed):
         if speed < 0 or speed > 255:

@@ -248,9 +248,9 @@ void executeCommand(int message) {
       break;
      case 'q': set_speed = true;
       break;
-     case'z': move_in_x_axis = true;
+     case 'z': move_in_x_axis = true;
       break;
-     case'y': move_in_y_axis = true;
+     case 'y': move_in_y_axis = true;
       break;
     }
  }
