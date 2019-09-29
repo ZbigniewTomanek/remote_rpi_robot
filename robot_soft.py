@@ -191,7 +191,7 @@ class CommandExecutor:
         if self.network_streaming_thread:
             self.does_network_streaming = False
             self.network_streaming_thread.stop()
-            self.streaming_thread.join()
+            self.network_streaming_thread.join()
 
     def network_stream_worker(self):
         logger.info('Starting streaming service')
@@ -249,7 +249,7 @@ def main_loop():
 
     while True:
         communicator.receive()
-        # dont_crash()
+        dont_crash()
 
 
 if __name__ == '__main__':
