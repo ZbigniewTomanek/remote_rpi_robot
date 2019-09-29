@@ -235,7 +235,7 @@ class CommandExecutor:
 def dont_crash(communicator):
     angle, distance = distance_sensor.range()
 
-    if distance < MIN_DISTANCE and drive_control.state != STOP_ROBOT_CMD:
+    if distance < MIN_DISTANCE:
         drive_control.stop()
         logger.error('Stopping robot to avoid crash!')
         communicator.send(TO_CLOSE_TO_OBSTACLE_MSG)
