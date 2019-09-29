@@ -37,6 +37,8 @@ def set_speed_test():
 
 
 if __name__ == '__main__':
+    drive_control.write(102)
+
     ride_forward_test()
     ride_backward_test()
     ride_left_test()
