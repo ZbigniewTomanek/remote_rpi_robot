@@ -6,14 +6,12 @@ import time
 import threading
 from utils import Observer, CommunicationClient
 from utils import steering_logger as logger
-import sys
 from constants import *
 import os
 
 
 communicator: CommunicationClient = None
 root = Tk()
-os.system('xset r off')
 
 
 def open_pipe():
@@ -61,6 +59,12 @@ def start_stream():
     communicator.send(START_STREAM_CMD)
 
 
+def dispose():
+    os.system('xset r on')
+    root.destroy()
+    exit(0)
+
+
 def key_pressed(event):
     value = repr(event.char)
     c = value[1]
@@ -89,9 +93,7 @@ def key_pressed(event):
         communicator.send(MEASURE_DISTANCE_CMD)
     elif c == 'q':
         communicator.send(SHUTDOWN_CMD)
-        os.system('xset r on')
-        root.destroy()
-        sys.exit(0)
+        dispose()
     elif c == 'x':
         communicator.send(START_NETWORK_STREAM_CMD)
     elif c == 'z':
@@ -142,6 +144,8 @@ def init():
         return
 
     logger.info('Connection established')
+
+    os.system('xset r off')
 
     communicator.attach_observer(DistanceObserver())
 

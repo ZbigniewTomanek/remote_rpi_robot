@@ -2,7 +2,7 @@ import subprocess
 import shlex
 from constants import *
 import socket
-from utils import StoppableThread
+from threading import Thread
 from utils import soft_logger as logger
 import json
 import sys
@@ -171,27 +171,25 @@ class CommandExecutor:
 
     def start_streaming(self):
         self.does_streaming = True
-        self.streaming_thread = StoppableThread(target=self.stream_worker)
+        self.streaming_thread = Thread(target=self.stream_worker)
         self.streaming_thread.start()
 
     def stop_streaming(self):
-        logger.info('Streaming service closed')
         if self.streaming_thread:
             self.does_streaming = False
-            self.streaming_thread.stop()
             self.streaming_thread.join()
+            logger.info('Streaming service closed')
 
     def start_network_streaming(self):
         self.does_network_streaming = True
-        self.network_streaming_thread = StoppableThread(target=self.network_stream_worker)
+        self.network_streaming_thread = Thread(target=self.network_stream_worker)
         self.network_streaming_thread.start()
 
     def stop_network_streaming(self):
-        logger.info('Streaming service closed')
         if self.network_streaming_thread:
             self.does_network_streaming = False
-            self.network_streaming_thread.stop()
             self.network_streaming_thread.join()
+            logger.info('Network streaming service closed')
 
     def network_stream_worker(self):
         logger.info('Starting streaming service')

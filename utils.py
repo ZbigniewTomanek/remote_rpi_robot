@@ -1,4 +1,4 @@
-import threading
+from threading import Thread
 import json
 import socket
 from constants import SERVER, PORT, BUFF_SIZE
@@ -6,24 +6,6 @@ import logging
 import sys
 
 from typing import List
-
-
-class StoppableThread(threading.Thread):
-    """Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition."""
-
-    isWorking = True
-
-    def __init__(self, target, args=()):
-        super(StoppableThread, self).__init__(target=target, args=args)
-        self._stop_event = threading.Event()
-
-    def stop(self):
-        self.isWorking = False
-        self._stop_event.set()
-
-    def stopped(self):
-        return self._stop_event.is_set()
 
 
 class Observer:
@@ -51,21 +33,22 @@ class CommunicationClient(Observable):
     def __init__(self):
         self.sock = socket.socket()
         self.receiver_thread = None
+        self.is_disposed = False
 
     def connect(self):
         utils_logger.info('Trying connect to server')
         self.sock.connect((SERVER, PORT))
 
-        self.receiver_thread = StoppableThread(target=self.receive)
+        self.receiver_thread = Thread(target=self.receive)
         self.receiver_thread.start()
 
     def dispose(self):
-        self.receiver_thread.stop()
+        self.is_disposed = True
         self.receiver_thread.join()
         self.sock.close()
 
     def receive(self):
-        while True:
+        while not self.is_disposed:
             try:
                 bits = self.sock.recv(BUFF_SIZE)
                 message = bits.decode('ascii')
