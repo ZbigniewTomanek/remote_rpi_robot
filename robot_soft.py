@@ -75,8 +75,8 @@ class CommandExecutor:
 
     communicator = None  # type: CommunicationService
 
-    streaming_thread = None  # type: StoppableThread
-    network_streaming_thread = None  # type: StoppableThread
+    streaming_thread = None  # type: Thread
+    network_streaming_thread = None  # type: Thread
 
     does_streaming = True
     does_network_streaming = True
@@ -141,6 +141,12 @@ class CommandExecutor:
 
         elif command == CAMERA_LEFT_CMD:
             drive_control.turn_camera_left()
+
+        elif command == TURN_SENSOR_LEFT_CMD:
+            distance_sensor.turn_left()
+
+        elif command == TURN_SENSOR_RIGHT_CMD:
+            distance_sensor.turn_right()
 
         elif command == MEASURE_DISTANCE_CMD:
             angle, distance = distance_sensor.range()

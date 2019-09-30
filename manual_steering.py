@@ -91,9 +91,13 @@ def key_pressed(event):
         communicator.send(CAMERA_RIGHT_CMD)
     elif c == ',':
         communicator.send(MEASURE_DISTANCE_CMD)
-    elif c == 'q':
+    elif c == 'r':
         communicator.send(SHUTDOWN_CMD)
         dispose()
+    elif c == 'q':
+        communicator.send(TURN_SENSOR_LEFT_CMD)
+    elif c == 'e':
+        communicator.send(TURN_SENSOR_RIGHT_CMD)
     elif c == 'x':
         communicator.send(START_NETWORK_STREAM_CMD)
     elif c == 'z':
