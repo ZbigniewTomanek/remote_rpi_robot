@@ -1,5 +1,5 @@
 # remote_rpi_robot
-This repository contains code that runs robot that i built myself from scratch with use of raspberry pi 3, arduinos, camera, sensors and# 
+This repository contains code that runs robot that i built myself from scratch with use of raspberry pi 3, arduino uno, arduinos nano, pi camera, vl53l0x, tower pro servos sensor and encoders
 
 ## What's inside?
 
