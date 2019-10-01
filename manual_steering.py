@@ -129,10 +129,12 @@ def key_released(event):
 
 class DistanceObserver(Observer):
     def notify(self, value: dict):
-        if type(value) == dict:
-            angle = value['angle']
-            distance = value['distance']
-            logger.log(str(value))
+        if type(value) == dict and value:
+            try:
+                angle = value['angle']
+                distance = value['distance']
+            except TypeError and KeyError:
+                pass
 
 
 def init():
